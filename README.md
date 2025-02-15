@@ -37,7 +37,6 @@ This is the documentation for the **Library Management System**, a system design
 efficiently.
 
 - **Version**: 1.0
-- **Author**: Library Team
 
 ---
 
@@ -319,7 +318,6 @@ Follow these steps to quickly get started with the Library Management System:
    - `/api/books/**`
    - `/api/patrons/**`
    - `/api/borrow/**`
-   - `/api/return/**`
 
 ---
 
