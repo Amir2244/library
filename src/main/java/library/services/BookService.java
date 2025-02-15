@@ -9,6 +9,9 @@ import library.exceptions.ResourceNotFoundException;
 import library.repositories.BookRepository;
 import library.repositories.BorrowingRecordRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,19 +23,23 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final BorrowingRecordRepository borrowingRecordRepository;
+
+    @Cacheable(value = "books")
     public List<BookResponse> getAllBooks() {
         return bookRepository.findAll().stream()
                 .map(this::mapToBookResponse)
                 .toList();
     }
 
+    @Cacheable(value = "books", key = "#id")
     public BookResponse getBookById(Long id) {
         return bookRepository.findById(id)
                 .map(this::mapToBookResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
     }
 
-    @Transactional
+    @CachePut(value = "books", key = "#result.id")
+    @CacheEvict(value = "books", allEntries = true)
     public BookResponse createBook(BookRequest request) {
         if (bookRepository.existsByIsbn(request.getIsbn())) {
             throw new ConflictException("ISBN already exists");
@@ -47,7 +54,8 @@ public class BookService {
         return mapToBookResponse(bookRepository.save(book));
     }
 
-    @Transactional
+    @CachePut(value = "books", key = "#id")
+    @CacheEvict(value = "books", allEntries = true)
     public BookResponse updateBook(Long id, BookRequest request) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
@@ -65,7 +73,7 @@ public class BookService {
         return mapToBookResponse(bookRepository.save(book));
     }
 
-    @Transactional
+    @CacheEvict(value = "books", allEntries = true)
     public void deleteBook(Long id) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
