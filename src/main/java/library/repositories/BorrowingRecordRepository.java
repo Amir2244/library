@@ -1,5 +1,6 @@
 package library.repositories;
 
+import library.entities.Book;
 import library.entities.BorrowingRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,4 +12,6 @@ public interface BorrowingRecordRepository extends JpaRepository<BorrowingRecord
     boolean existsByBookIdAndReturnDateIsNull(Long bookId);
     boolean existsByPatronIdAndReturnDateIsNull(Long patronId);
     List<BorrowingRecord> findByPatronIdOrderByBorrowDateDesc(Long patronId);
+
+    void deleteBorrowingRecordByBook(Book book);
 }

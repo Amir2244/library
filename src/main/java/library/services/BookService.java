@@ -44,7 +44,6 @@ public class BookService {
         if (bookRepository.existsByIsbn(request.getIsbn())) {
             throw new ConflictException("ISBN already exists");
         }
-
         Book book = new Book();
         book.setTitle(request.getTitle());
         book.setAuthor(request.getAuthor());
@@ -81,7 +80,7 @@ public class BookService {
         if (borrowingRecordRepository.existsByBookIdAndReturnDateIsNull(book.getId())) {
             throw new ConflictException("Cannot delete borrowed book");
         }
-
+        borrowingRecordRepository.deleteBorrowingRecordByBook(book);
         bookRepository.delete(book);
     }
 
